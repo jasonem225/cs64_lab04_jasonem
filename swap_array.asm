@@ -20,9 +20,10 @@ newline:    .asciiz "\n"
         
 expectedMyArray:
         .word 29 28 27 26 25 24 23 22 21 20 19
+        #.word 0 1 2 3 4 5 6 7 8 9 10
 myArray:
         .word 19 20 21 22 23 24 25 26 27 28 29
-
+        #.word 10 9 8 7 6 5 4 3 2 1 0
 .text
 # Print everything in the array (without use of a loop)
 # Used as a function/sub-routine
@@ -179,8 +180,8 @@ main_failed:
         syscall
         
 main_exit:      
-	# TODO: Write code to properly exit a SPIM simulation
-
+        li $v0, 10
+        syscall
         
 # COPYFROMHERE - DO NOT REMOVE THIS LINE
 
@@ -202,7 +203,38 @@ doSwap:
         #   y--
         # }
 
-        # TODO: fill in the code
+        # variables
+        li $t0, 0
+        li $t1, 10
+        la $t2, myArray
+        li $t3, 5
 
+loop: 
+        # check if x = 5
+        # jump out if true
+        beq $t0, $t3, loop_exit
+        
+        # get address and value of myArray[x]
+        sll $t4, $t0, 2
+        addu $t4, $t4, $t2
+        lw $t6, 0($t4)
+
+        # get address and value of myArray[y]
+        sll $t5, $t1, 2
+        addu $t5, $t5, $t2
+        lw $t7, 0($t5)
+
+        # change values at addresses
+        sw $t7, 0($t4)
+        sw $t6, 0($t5)
+
+        # increment index
+        addiu $t0, $t0, 1
+        addi $t1, $t1, -1
+
+        # restart loop
+        j loop
+
+loop_exit:
         # do not remove this last line
         jr $ra
